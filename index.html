@@ -3,310 +3,805 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متتبع شرايح الموبيل - إصدار محسن</title>
+    <title>متتبع شرائح الموبايل - المحسن</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, sans-serif;
             direction: rtl;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 100vh;
-            color: #333;
+            color: #1a202c;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
         }
-        
+
+        /* خلفية متحركة */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: backgroundMove 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes backgroundMove {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
-        
+
+        /* Header */
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 40px;
             margin-bottom: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
         .header h1 {
-            color: #4a5568;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-family: 'Amiri', serif;
+            color: #1a202c;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: titlePulse 3s ease-in-out infinite;
         }
-        
-        .progress-overview {
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .header p {
+            color: #2d3748;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        /* Digital Clock */
+        .digital-clock {
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff88;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 136, 0.3),
+                inset 0 0 20px rgba(0, 255, 136, 0.1);
+            border: 2px solid rgba(0, 255, 136, 0.5);
+            letter-spacing: 2px;
+        }
+
+        /* Motivation Cards */
+        .motivation-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
-        
-        .progress-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
+
+        .motivation-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
-            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
         }
-        
-        .progress-card:hover {
-            transform: translateY(-5px);
+
+        .motivation-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
         }
-        
-        .progress-card h3 {
-            color: #667eea;
-            font-size: 1.1rem;
+
+        .motivation-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s ease-in-out infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+            100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        }
+
+        .motivation-card .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .motivation-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
             margin-bottom: 10px;
+            color: #1a202c;
         }
-        
-        .progress-card .value {
+
+        .motivation-card p {
+            color: #2d3748;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Simple Stats - محدث */
+        .simple-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .simple-stat {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .simple-stat:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .simple-stat .icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: block;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .simple-stat .number {
             font-size: 2rem;
-            font-weight: bold;
-            color: #4a5568;
+            font-weight: 900;
+            color: #1a202c;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
+        .simple-stat .label {
+            font-size: 1rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        /* Progress Cards - محدث */
+        .progress-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .progress-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-card h3 {
+            color: #1a202c;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .progress-card .value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-card small {
+            color: #2d3748;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Circular Progress - محسن */
         .circular-progress {
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
-            background: conic-gradient(#667eea 0deg, #667eea var(--progress-angle), #e2e8f0 var(--progress-angle), #e2e8f0 360deg);
+            background: conic-gradient(#667eea 0deg, #764ba2 var(--progress-angle), #e2e8f0 var(--progress-angle), #e2e8f0 360deg);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 15px;
+            margin: 0 auto 20px;
             position: relative;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
-        
+
         .circular-progress::before {
             content: '';
-            width: 80px;
-            height: 80px;
-            background: white;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
             border-radius: 50%;
             position: absolute;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .circular-progress .percentage {
             position: relative;
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.6rem;
+            font-weight: 900;
             color: #667eea;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
         }
-        
+
+        /* Controls - محسن */
         .controls {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
-        
+
         .input-group {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
         }
-        
+
         .form-group {
             display: flex;
             flex-direction: column;
         }
-        
+
         .form-group label {
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #4a5568;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #1a202c;
+            font-size: 1.1rem;
         }
-        
-        .form-group input, .form-group select {
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
+
+        .form-group input,
+        .form-group select {
+            padding: 15px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
             font-size: 16px;
-            transition: border-color 0.3s ease;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
         }
-        
-        .form-group input:focus, .form-group select:focus {
+
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
         }
-        
+
+        /* Buttons - محسن */
         .button-group {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
+            margin-bottom: 20px;
         }
-        
+
         .btn {
-            padding: 12px 25px;
+            padding: 15px 25px;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
-        
+
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
         }
-        
+
         .btn-secondary {
-            background: #f7fafc;
-            color: #4a5568;
-            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a202c;
+            border: 2px solid rgba(255, 255, 255, 0.5);
         }
-        
+
         .btn-secondary:hover {
-            background: #edf2f7;
-            border-color: #cbd5e0;
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-3px);
         }
-        
+
         .btn-danger {
-            background: linear-gradient(135deg, #f56565, #e53e3e);
+            background: linear-gradient(135deg, #e53e3e, #c53030);
             color: white;
         }
-        
-        .table-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(229, 62, 62, 0.4);
         }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th, td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        th {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-        }
-        
-        tbody tr {
-            transition: background-color 0.3s ease;
-        }
-        
-        tbody tr:hover {
-            background-color: rgba(102, 126, 234, 0.05);
-        }
-        
-        .chart-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #48bb78;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .notification.show {
-            opacity: 1;
-        }
-        
+
+        /* Quick Actions - محسن */
         .quick-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
             flex-wrap: wrap;
+            margin-top: 20px;
         }
-        
+
         .quick-btn {
-            padding: 8px 15px;
-            background: rgba(102, 126, 234, 0.1);
+            padding: 12px 18px;
+            background: rgba(102, 126, 234, 0.15);
             color: #667eea;
-            border: 1px solid #667eea;
-            border-radius: 20px;
-            font-size: 14px;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-family: 'Tajawal', sans-serif;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        
+
         .quick-btn:hover {
             background: #667eea;
             color: white;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
-        
+
+        /* Table - محسن */
+        .table-container {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .table-container h2 {
+            color: #1a202c;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            font-size: 1rem;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+            transform: scale(1.01);
+        }
+
+        /* Charts - محسن */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .chart-card h3 {
+            color: #1a202c;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Suggestions Panel */
+        .suggestions-panel {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestions-panel h3 {
+            color: #1a202c;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .suggestion-item {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateX(10px);
+        }
+
+        .suggestion-item .icon {
+            font-size: 1.5rem;
+        }
+
+        .suggestion-item .text {
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        /* Notifications - محسن */
+        .notification {
+            position: fixed;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 18px 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s ease;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.show {
+            opacity: 1;
+            animation: notificationSlide 0.4s ease;
+        }
+
+        @keyframes notificationSlide {
+            0% { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+            100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+        }
+
+        /* Current Time Display */
+        .current-time {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff88;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(0, 255, 136, 0.5);
+            z-index: 100;
+        }
+
+        /* Mobile Responsive - محسن */
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
             }
             
             .header h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             
             .button-group {
                 flex-direction: column;
             }
             
-            .btn {
-                justify-content: center;
+            .charts-container {
+                grid-template-columns: 1fr;
             }
+            
+            .motivation-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.85rem;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+            
+            .current-time {
+                bottom: 15px;
+                right: 15px;
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Glow Effect */
+        .glow {
+            box-shadow: 
+                0 0 20px rgba(102, 126, 234, 0.5),
+                0 0 40px rgba(102, 126, 234, 0.3),
+                0 0 60px rgba(102, 126, 234, 0.1);
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <!-- Header Section -->
+        <!-- Header -->
         <div class="header">
-            <h1>🔧 متتبع شرائح الموبايل</h1>
-            <p>نظام متقدم لتتبع إنجاز المهام وقياس الأداء</p>
+            <div class="header-content">
+                <h1>🚀 متتبع شرائح الموبايل المتقدم</h1>
+                <p>نظام ذكي وتفاعلي لتتبع الإنجاز وزيادة الإنتاجية</p>
+            </div>
         </div>
 
-        <!-- Progress Overview Cards -->
+        <!-- Digital Clock -->
+        <div class="digital-clock" id="digitalClock">
+            --:--:--
+        </div>
+
+        <!-- Motivation Cards -->
+        <div class="motivation-cards">
+            <div class="motivation-card">
+                <span class="icon">🔥</span>
+                <h3>استمر في التقدم!</h3>
+                <p>كل شريحة تقربك من هدفك</p>
+            </div>
+            <div class="motivation-card">
+                <span class="icon">💪</span>
+                <h3>أنت قوي!</h3>
+                <p>الإنجاز يبدأ بخطوة واحدة</p>
+            </div>
+            <div class="motivation-card">
+                <span class="icon">🎯</span>
+                <h3>ركز على الهدف</h3>
+                <p>النجاح ثمرة الثبات والمثابرة</p>
+            </div>
+            <div class="motivation-card">
+                <span class="icon">⭐</span>
+                <h3>أنت مميز!</h3>
+                <p>كل لحظة عمل تضيف إلى نجاحك</p>
+            </div>
+        </div>
+
+        <!-- Simple Stats -->
+        <div class="simple-stats">
+            <div class="simple-stat">
+                <div class="icon">📱</div>
+                <div class="number" id="todayWork">0</div>
+                <div class="label">عمل اليوم</div>
+            </div>
+            <div class="simple-stat">
+                <div class="icon">🎯</div>
+                <div class="number" id="dailyGoalProgress">0%</div>
+                <div class="label">تقدم الهدف</div>
+            </div>
+            <div class="simple-stat">
+                <div class="icon">⚡</div>
+                <div class="number" id="currentSpeed">0</div>
+                <div class="label">سرعة حالية</div>
+            </div>
+            <div class="simple-stat">
+                <div class="icon">⏱️</div>
+                <div class="number" id="totalHours">0.0</div>
+                <div class="label">ساعات العمل</div>
+            </div>
+            <div class="simple-stat">
+                <div class="icon">🏆</div>
+                <div class="number" id="tasksCount">0</div>
+                <div class="label">عدد المهام</div>
+            </div>
+            <div class="simple-stat">
+                <div class="icon">📊</div>
+                <div class="number" id="efficiencyRate">--</div>
+                <div class="label">معدل الكفاءة</div>
+            </div>
+        </div>
+
+        <!-- Progress Cards -->
         <div class="progress-overview">
             <div class="progress-card">
                 <div class="circular-progress" id="totalProgress">
@@ -314,46 +809,69 @@
                 </div>
                 <h3>التقدم الإجمالي</h3>
             </div>
-            
             <div class="progress-card">
                 <h3>الشرائح المنجزة</h3>
                 <div class="value" id="completedSlides">0</div>
                 <small>من أصل <span id="totalSlidesDisplay">200</span></small>
             </div>
-            
             <div class="progress-card">
                 <h3>متوسط السرعة</h3>
                 <div class="value" id="averageSpeed">0</div>
                 <small>شريحة/دقيقة</small>
             </div>
-            
             <div class="progress-card">
-                <h3>الوقت المتوقع للانتهاء</h3>
+                <h3>الوقت المتوقع</h3>
                 <div class="value" id="estimatedTime">--</div>
                 <small>دقيقة تقريباً</small>
             </div>
         </div>
 
-        <!-- Controls Section -->
+        <!-- Suggestions Panel -->
+        <div class="suggestions-panel">
+            <h3>💡 اقتراحات ذكية</h3>
+            <div class="suggestion-item" id="suggestion1">
+                <span class="icon">⏰</span>
+                <span class="text">خذ استراحة قصيرة كل 25 دقيقة</span>
+            </div>
+            <div class="suggestion-item" id="suggestion2">
+                <span class="icon">🎵</span>
+                <span class="text">جرب الاستماع للموسيقى التحفيزية</span>
+            </div>
+            <div class="suggestion-item" id="suggestion3">
+                <span class="icon">💧</span>
+                <span class="text">لا تنس شرب الماء بانتظام</span>
+            </div>
+            <div class="suggestion-item" id="suggestion4">
+                <span class="icon">📈</span>
+                <span class="text">حدد أهدافاً صغيرة قابلة للتحقيق</span>
+            </div>
+        </div>
+
+        <!-- Controls -->
         <div class="controls">
             <div class="input-group">
                 <div class="form-group">
-                    <label for="slicesInput">عدد الشرائح المنجزة:</label>
-                    <input type="number" id="slicesInput" min="1" max="50" value="10" placeholder="أدخل العدد">
+                    <label for="slicesInput">عدد الشرائح:</label>
+                    <input type="number" id="slicesInput" min="1" max="50" value="10">
                 </div>
-                
                 <div class="form-group">
                     <label for="totalSlidesInput">إجمالي الشرائح:</label>
-                    <input type="number" id="totalSlidesInput" min="50" value="200" placeholder="العدد الكلي">
+                    <input type="number" id="totalSlidesInput" min="50" value="200">
                 </div>
-                
                 <div class="form-group">
                     <label for="taskType">نوع المهمة:</label>
                     <select id="taskType">
-                        <option value="عادية">مهمة عادية</option>
-                        <option value="سريعة">مهمة سريعة</option>
-                        <option value="معقدة">مهمة معقدة</option>
+                        <option value="عادية">عادية 📝</option>
+                        <option value="سريعة">سريعة ⚡</option>
+                        <option value="معقدة">معقدة 🧠</option>
+                        <option value="مراجعة">مراجعة 🔍</option>
+                        <option value="إبداعية">إبداعية 🎨</option>
+                        <option value="تقنية">تقنية 💻</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="dailyGoalInput">الهدف اليومي:</label>
+                    <input type="number" id="dailyGoalInput" min="10" max="500" value="50" placeholder="شريحة">
                 </div>
             </div>
             
@@ -361,43 +879,46 @@
                 <button class="btn btn-primary" onclick="addTask()">
                     ✅ إضافة دفعة
                 </button>
-                <button class="btn btn-secondary" onclick="pauseTimer()">
+                <button class="btn btn-secondary" onclick="pauseTimer()" id="pauseBtn">
                     ⏸️ إيقاف مؤقت
                 </button>
-                <button class="btn btn-secondary" onclick="resumeTimer()">
-                    ▶️ استئناف
+                <button class="btn btn-secondary" onclick="startBreak()">
+                    ☕ استراحة
                 </button>
                 <button class="btn btn-secondary" onclick="exportData()">
-                    📊 تصدير البيانات
+                    📊 تصدير
                 </button>
                 <button class="btn btn-danger" onclick="resetAll()">
                     🔄 إعادة تعيين
                 </button>
             </div>
-            
+
             <div class="quick-actions">
-                <div class="quick-btn" onclick="quickAdd(5)">+5 شرائح</div>
-                <div class="quick-btn" onclick="quickAdd(10)">+10 شرائح</div>
-                <div class="quick-btn" onclick="quickAdd(15)">+15 شرائح</div>
-                <div class="quick-btn" onclick="quickAdd(20)">+20 شرائح</div>
+                <div class="quick-btn" onclick="quickAdd(5)">+5 ⚡</div>
+                <div class="quick-btn" onclick="quickAdd(10)">+10 📝</div>
+                <div class="quick-btn" onclick="quickAdd(15)">+15 🚀</div>
+                <div class="quick-btn" onclick="quickAdd(20)">+20 💪</div>
+                <div class="quick-btn" onclick="quickAdd(25)">+25 🔥</div>
+                <div class="quick-btn" onclick="quickAdd(30)">+30 ⭐</div>
             </div>
         </div>
 
-        <!-- Table Section -->
+        <!-- Table -->
         <div class="table-container">
-            <h2>📋 سجل المهام</h2>
+            <h2>📋 سجل المهام المفصل</h2>
             <table id="taskTable">
                 <thead>
                     <tr>
-                        <th>رقم الدفعة</th>
-                        <th>الشرائح المضافة</th>
+                        <th>#</th>
+                        <th>الشرائح</th>
                         <th>الإجمالي</th>
-                        <th>الوقت المستغرق</th>
-                        <th>النسبة المئوية</th>
+                        <th>الوقت</th>
+                        <th>النسبة</th>
                         <th>السرعة</th>
-                        <th>نوع المهمة</th>
+                        <th>النوع</th>
+                        <th>وقت البداية</th>
                         <th>التوقيت</th>
-                        <th>إجراءات</th>
+                        <th>حذف</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -405,15 +926,14 @@
             </table>
         </div>
 
-        <!-- Charts Section -->
-        <div class="charts-grid">
-            <div class="chart-container">
-                <h3>📈 تقدم العمل</h3>
+        <!-- Charts -->
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3>📈 تطور الإنجاز</h3>
                 <canvas id="progressChart" width="400" height="200"></canvas>
             </div>
-            
-            <div class="chart-container">
-                <h3>⚡ تحليل السرعة</h3>
+            <div class="chart-card">
+                <h3>⚡ تحليل الأداء</h3>
                 <canvas id="speedChart" width="400" height="200"></canvas>
             </div>
         </div>
@@ -422,8 +942,11 @@
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
+    <!-- Current Time Display -->
+    <div class="current-time" id="currentTime">--:--:--</div>
+
     <script>
-        // متغيرات النظام
+        // المتغيرات الأساسية
         let totalSlides = 200;
         let completedSlides = 0;
         let batchCounter = 0;
@@ -433,10 +956,66 @@
         let pausedDuration = 0;
         let pauseStartTime = 0;
         let tasks = [];
+        let dailyGoal = 50;
+        let currentTaskStartTime = null;
+        let breakStartTime = null;
+        let totalBreakTime = 0;
 
-        // بيانات الرسوم البيانية
+        // الرسوم البيانية
         let progressChart, speedChart;
-        
+
+        // رسائل التحفيز العشوائية
+        const motivationalMessages = [
+            '🔥 رائع! استمر في هذا الأداء المميز!',
+            '💪 أنت تحرز تقدماً مذهلاً!',
+            '⭐ كل شريحة تقربك من النجاح!',
+            '🚀 إنجازك اليوم يلهم الآخرين!',
+            '🎯 تركيزك اليوم في أعلى مستوياته!',
+            '🏆 أنت بطل حقيقي في الإنتاجية!',
+            '💎 جودة عملك تتحسن باستمرار!',
+            '🌟 أداؤك اليوم استثنائي!'
+        ];
+
+        // اقتراحات ديناميكية
+        const dynamicSuggestions = [
+            { icon: '⏰', text: 'خذ استراحة قصيرة كل 25 دقيقة' },
+            { icon: '🎵', text: 'جرب الاستماع للموسيقى التحفيزية' },
+            { icon: '💧', text: 'لا تنس شرب الماء بانتظام' },
+            { icon: '📈', text: 'حدد أهدافاً صغيرة قابلة للتحقيق' },
+            { icon: '🧘', text: 'خذ نفساً عميقاً وركز' },
+            { icon: '🌱', text: 'كل إنجاز صغير يقود لنجاح كبير' },
+            { icon: '💡', text: 'غير بيئة العمل لتجديد النشاط' },
+            { icon: '🎉', text: 'كافئ نفسك عند تحقيق هدف' }
+        ];
+
+        // تحديث الساعة الرقمية
+        function updateDigitalClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ar-EG', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('digitalClock').textContent = timeString;
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        // تحديث الاقتراحات الذكية
+        function updateSuggestions() {
+            const suggestions = document.querySelectorAll('.suggestion-item');
+            const shuffledSuggestions = [...dynamicSuggestions].sort(() => 0.5 - Math.random());
+            
+            suggestions.forEach((suggestion, index) => {
+                if (shuffledSuggestions[index]) {
+                    const iconSpan = suggestion.querySelector('.icon');
+                    const textSpan = suggestion.querySelector('.text');
+                    iconSpan.textContent = shuffledSuggestions[index].icon;
+                    textSpan.textContent = shuffledSuggestions[index].text;
+                }
+            });
+        }
+
         // إعداد الرسوم البيانية
         function initCharts() {
             // رسم التقدم
@@ -451,25 +1030,39 @@
                         borderColor: '#667eea',
                         backgroundColor: 'rgba(102, 126, 234, 0.1)',
                         fill: true,
-                        tension: 0.3
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#764ba2',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#667eea',
+                            borderWidth: 1
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             max: 100,
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            }
+                            ticks: { 
+                                callback: function(value) { return value + '%'; },
+                                color: '#666'
+                            },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#666' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' }
                         }
                     }
                 }
@@ -486,26 +1079,39 @@
                         data: [],
                         backgroundColor: 'rgba(102, 126, 234, 0.8)',
                         borderColor: '#667eea',
-                        borderWidth: 2
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#667eea',
+                            borderWidth: 1
                         }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            ticks: { color: '#666' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#666' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' }
                         }
                     }
                 }
             });
         }
 
-        // تحديث المؤشرات
+        // تحديث المؤشرات البسيطة
         function updateIndicators() {
             const percentage = (completedSlides / totalSlides) * 100;
             
@@ -514,99 +1120,166 @@
             const progressAngle = (percentage / 100) * 360;
             progressElement.style.setProperty('--progress-angle', progressAngle + 'deg');
             document.getElementById('totalPercentage').textContent = percentage.toFixed(1) + '%';
-            
+
+            // إضافة تأثير التوهج عند الاكتمال
+            if (percentage >= 100) {
+                progressElement.classList.add('glow');
+            } else {
+                progressElement.classList.remove('glow');
+            }
+
             // الشرائح المنجزة
             document.getElementById('completedSlides').textContent = completedSlides;
             document.getElementById('totalSlidesDisplay').textContent = totalSlides;
-            
+
             // متوسط السرعة
-            const totalTimeMinutes = (Date.now() - sessionStartTime - pausedDuration) / (1000 * 60);
+            const totalTimeMinutes = (Date.now() - sessionStartTime - pausedDuration - totalBreakTime) / (1000 * 60);
             const averageSpeed = totalTimeMinutes > 0 ? (completedSlides / totalTimeMinutes).toFixed(1) : 0;
             document.getElementById('averageSpeed').textContent = averageSpeed;
-            
-            // الوقت المتوقع للانتهاء
+
+            // الوقت المتوقع
             const remainingSlides = totalSlides - completedSlides;
             const estimatedMinutes = averageSpeed > 0 ? (remainingSlides / averageSpeed).toFixed(0) : '--';
             document.getElementById('estimatedTime').textContent = estimatedMinutes;
+
+            // الإحصائيات البسيطة
+            updateSimpleStats();
         }
 
-        // إضافة مهمة جديدة
+        // تحديث الإحصائيات البسيطة
+        function updateSimpleStats() {
+            // عمل اليوم
+            document.getElementById('todayWork').textContent = completedSlides;
+            
+            // تقدم الهدف اليومي
+            const goalProgress = dailyGoal > 0 ? Math.min(100, (completedSlides / dailyGoal) * 100).toFixed(0) : 0;
+            document.getElementById('dailyGoalProgress').textContent = goalProgress + '%';
+            
+            // السرعة الحالية
+            const currentSpeed = tasks.length > 0 ? tasks[tasks.length - 1].speed : 0;
+            document.getElementById('currentSpeed').textContent = currentSpeed;
+            
+            // ساعات العمل
+            const totalHours = ((Date.now() - sessionStartTime - pausedDuration - totalBreakTime) / (1000 * 60 * 60)).toFixed(1);
+            document.getElementById('totalHours').textContent = totalHours;
+
+            // عدد المهام
+            document.getElementById('tasksCount').textContent = tasks.length;
+
+            // معدل الكفاءة
+            const efficiencyRate = tasks.length > 0 ? 
+                (tasks.reduce((sum, task) => sum + parseFloat(task.speed), 0) / tasks.length).toFixed(1) : '--';
+            document.getElementById('efficiencyRate').textContent = efficiencyRate;
+        }
+
+        // إضافة مهمة
         function addTask() {
             const slidesInput = parseInt(document.getElementById('slicesInput').value) || 10;
             const taskType = document.getElementById('taskType').value;
-            
+
             if (completedSlides + slidesInput > totalSlides) {
-                showNotification('تحذير: العدد المدخل يتجاوز الحد المسموح!', 'warning');
+                showNotification('تحذير: العدد يتجاوز الحد المسموح!', 'warning');
                 return;
             }
-            
+
             const currentTime = Date.now();
-            const timeSinceLastBatch = (currentTime - lastBatchTime - (isPaused ? Date.now() - pauseStartTime : 0)) / (1000 * 60);
+            let timeSinceLastBatch;
+
+            if (currentTaskStartTime) {
+                timeSinceLastBatch = (currentTime - currentTaskStartTime - (isPaused ? Date.now() - pauseStartTime : 0)) / (1000 * 60);
+            } else {
+                timeSinceLastBatch = (currentTime - lastBatchTime - (isPaused ? Date.now() - pauseStartTime : 0)) / (1000 * 60);
+            }
             
             batchCounter++;
             completedSlides += slidesInput;
             const percentage = (completedSlides / totalSlides) * 100;
             const speed = timeSinceLastBatch > 0 ? (slidesInput / timeSinceLastBatch).toFixed(1) : 0;
-            
-            // إضافة المهمة لقائمة المهام
+
+            // وقت بداية المهمة
+            const startTime = currentTaskStartTime ? 
+                new Date(currentTaskStartTime).toLocaleTimeString('ar-EG') : 
+                new Date(lastBatchTime).toLocaleTimeString('ar-EG');
+
             const task = {
                 id: batchCounter,
                 batch: batchCounter,
                 slidesAdded: slidesInput,
                 totalSlides: completedSlides,
-                timeSpent: timeSinceLastBatch.toFixed(2),
+                timeSpent: timeSinceLastBatch.toFixed(1),
                 percentage: percentage.toFixed(1),
                 speed: speed,
                 taskType: taskType,
-                timestamp: new Date().toLocaleString('ar-EG')
+                startTime: startTime,
+                timestamp: new Date().toLocaleTimeString('ar-EG')
             };
-            
+
             tasks.push(task);
             addRowToTable(task);
             updateCharts();
             updateIndicators();
             
             lastBatchTime = currentTime;
+            currentTaskStartTime = currentTime; // بداية المهمة التالية
             
-            showNotification(`تم إضافة ${slidesInput} شريحة بنجاح! 🎉`);
-            
-            // التحقق من اكتمال العمل
+            // رسالة تحفيزية عشوائية
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            showNotification(`تم إضافة ${slidesInput} شريحة! ${randomMessage}`);
+
+            // فحص اكتمال العمل
             if (completedSlides >= totalSlides) {
-                showNotification('🎊 تهانينا! تم إنجاز جميع الشرائح!', 'success');
+                showNotification('🎊 تهانينا الحارة! تم إنجاز جميع الشرائح بنجاح!');
+                celebrateCompletion();
+            }
+
+            // فحص تحقيق الهدف اليومي
+            if (completedSlides >= dailyGoal && dailyGoal > 0 && completedSlides - slidesInput < dailyGoal) {
+                showNotification('🏆 مبروك! تم تحقيق الهدف اليومي بتفوق!');
             }
         }
 
         // إضافة صف للجدول
         function addRowToTable(task) {
             const table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
-            const row = table.insertRow(0); // إدراج في الأعلى
+            const row = table.insertRow(0);
             
             row.innerHTML = `
-                <td>${task.batch}</td>
-                <td><strong>${task.slidesAdded}</strong></td>
+                <td><strong style="color: #667eea;">${task.batch}</strong></td>
+                <td><span style="color: #48bb78; font-weight: 700; font-size: 1.1rem;">${task.slidesAdded}</span></td>
                 <td>${task.totalSlides}</td>
-                <td>${task.timeSpent} دقيقة</td>
-                <td><strong>${task.percentage}%</strong></td>
-                <td>${task.speed} ش/د</td>
-                <td><span class="task-type">${task.taskType}</span></td>
-                <td>${task.timestamp}</td>
-                <td><button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="deleteTask(${task.id})">حذف</button></td>
+                <td>${task.timeSpent} د</td>
+                <td><strong style="color: #667eea;">${task.percentage}%</strong></td>
+                <td><span style="color: #e53e3e; font-weight: 600;">${task.speed}</span> ش/د</td>
+                <td><span style="font-size: 0.9rem; padding: 4px 8px; background: rgba(102, 126, 234, 0.1); border-radius: 10px;">${task.taskType}</span></td>
+                <td style="font-size: 0.85rem; color: #2d3748;">${task.startTime}</td>
+                <td style="font-size: 0.85rem; color: #2d3748;">${task.timestamp}</td>
+                <td><button class="btn btn-danger" style="padding: 8px 12px; font-size: 12px;" onclick="deleteTask(${task.id})">🗑️</button></td>
             `;
+
+            // تأثير الظهور للصف الجديد
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                row.style.transition = 'all 0.5s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, 100);
         }
 
         // تحديث الرسوم البيانية
         function updateCharts() {
-            const labels = tasks.slice(-10).map(t => `دفعة ${t.batch}`);
-            const progressData = tasks.slice(-10).map(t => parseFloat(t.percentage));
-            const speedData = tasks.slice(-10).map(t => parseFloat(t.speed));
-            
+            const recent = tasks.slice(-10);
+            const labels = recent.map((t, i) => `مهمة ${i + 1}`);
+            const progressData = recent.map(t => parseFloat(t.percentage));
+            const speedData = recent.map(t => parseFloat(t.speed));
+
             progressChart.data.labels = labels;
             progressChart.data.datasets[0].data = progressData;
-            progressChart.update();
-            
+            progressChart.update('active');
+
             speedChart.data.labels = labels;
             speedChart.data.datasets[0].data = speedData;
-            speedChart.update();
+            speedChart.update('active');
         }
 
         // الإضافة السريعة
@@ -615,39 +1288,53 @@
             addTask();
         }
 
-        // إيقاف المؤقت
+        // بدء استراحة
+        function startBreak() {
+            if (!breakStartTime) {
+                breakStartTime = Date.now();
+                showNotification('☕ بدأت الاستراحة! استمتع بوقتك', 'warning');
+                
+                // تذكير العودة بعد 5 دقائق
+                setTimeout(() => {
+                    if (breakStartTime) {
+                        showNotification('⏰ حان وقت العودة للعمل!', 'warning');
+                    }
+                }, 5 * 60 * 1000);
+            } else {
+                totalBreakTime += Date.now() - breakStartTime;
+                breakStartTime = null;
+                showNotification('🚀 أهلاً بعودتك! لنستكمل الإنجاز');
+            }
+        }
+
+        // إيقاف/استئناف المؤقت
         function pauseTimer() {
             if (!isPaused) {
                 isPaused = true;
                 pauseStartTime = Date.now();
+                document.getElementById('pauseBtn').innerHTML = '▶️ استئناف';
                 showNotification('تم إيقاف المؤقت مؤقتاً ⏸️');
-            }
-        }
-
-        // استئناف المؤقت
-        function resumeTimer() {
-            if (isPaused) {
+            } else {
                 pausedDuration += Date.now() - pauseStartTime;
                 isPaused = false;
-                showNotification('تم استئناف المؤقت ▶️');
+                document.getElementById('pauseBtn').innerHTML = '⏸️ إيقاف مؤقت';
+                showNotification('تم استئناف العمل بنجاح ▶️');
             }
         }
 
         // حذف مهمة
         function deleteTask(taskId) {
-            if (confirm('هل أنت متأكد من حذف هذه المهمة؟')) {
+            if (confirm('هل تريد حذف هذه المهمة نهائياً؟')) {
                 const taskIndex = tasks.findIndex(t => t.id === taskId);
                 if (taskIndex > -1) {
                     const task = tasks[taskIndex];
                     completedSlides -= task.slidesAdded;
                     tasks.splice(taskIndex, 1);
                     
-                    // إعادة بناء الجدول
                     rebuildTable();
                     updateCharts();
                     updateIndicators();
-                    
-                    showNotification('تم حذف المهمة بنجاح');
+                    showNotification('تم حذف المهمة بنجاح 🗑️');
                 }
             }
         }
@@ -656,48 +1343,54 @@
         function rebuildTable() {
             const tbody = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
             tbody.innerHTML = '';
-            tasks.reverse().forEach(task => addRowToTable(task));
-            tasks.reverse();
+            tasks.slice().reverse().forEach(task => addRowToTable(task));
         }
 
         // تصدير البيانات
         function exportData() {
             const data = {
-                summary: {
-                    totalSlides: totalSlides,
-                    completedSlides: completedSlides,
-                    percentage: ((completedSlides / totalSlides) * 100).toFixed(1),
-                    sessionDuration: ((Date.now() - sessionStartTime - pausedDuration) / (1000 * 60)).toFixed(1)
+                تاريخ_التصدير: new Date().toLocaleString('ar-EG'),
+                الملخص: {
+                    إجمالي_الشرائح: totalSlides,
+                    الشرائح_المنجزة: completedSlides,
+                    النسبة_المئوية: ((completedSlides / totalSlides) * 100).toFixed(1) + '%',
+                    الهدف_اليومي: dailyGoal,
+                    عدد_المهام: tasks.length,
+                    إجمالي_وقت_العمل: ((Date.now() - sessionStartTime - pausedDuration - totalBreakTime) / (1000 * 60 * 60)).toFixed(1) + ' ساعة',
+                    متوسط_السرعة: tasks.length > 0 ? (tasks.reduce((sum, task) => sum + parseFloat(task.speed), 0) / tasks.length).toFixed(1) + ' ش/د' : '0'
                 },
-                tasks: tasks
+                المهام_التفصيلية: tasks
             };
-            
+
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `mobile-slices-data-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `تقرير-شرائح-${new Date().toLocaleDateString('ar-EG').replace(/\//g, '-')}.json`;
             a.click();
             URL.revokeObjectURL(url);
             
-            showNotification('تم تصدير البيانات بنجاح! 📊');
+            showNotification('📊 تم تصدير التقرير المفصل بنجاح!');
         }
 
         // إعادة تعيين الكل
         function resetAll() {
-            if (confirm('هل أنت متأكد من إعادة تعيين جميع البيانات؟ سيتم فقدان جميع التقدم!')) {
+            if (confirm('⚠️ سيتم حذف جميع البيانات نهائياً. هل أنت متأكد؟')) {
                 totalSlides = parseInt(document.getElementById('totalSlidesInput').value) || 200;
                 completedSlides = 0;
                 batchCounter = 0;
                 sessionStartTime = Date.now();
                 lastBatchTime = Date.now();
+                currentTaskStartTime = null;
                 isPaused = false;
                 pausedDuration = 0;
+                totalBreakTime = 0;
+                breakStartTime = null;
                 tasks = [];
-                
+
                 // مسح الجدول
                 document.getElementById("taskTable").getElementsByTagName('tbody')[0].innerHTML = '';
-                
+
                 // مسح الرسوم البيانية
                 progressChart.data.labels = [];
                 progressChart.data.datasets[0].data = [];
@@ -706,10 +1399,21 @@
                 speedChart.data.labels = [];
                 speedChart.data.datasets[0].data = [];
                 speedChart.update();
-                
+
                 updateIndicators();
-                showNotification('تم إعادة تعيين النظام بنجاح! 🔄');
+                updateSuggestions();
+                showNotification('🔄 تم إعادة تعيين النظام بالكامل!');
             }
+        }
+
+        // احتفال الإنجاز
+        function celebrateCompletion() {
+            // تأثيرات بصرية للاحتفال
+            document.body.style.animation = 'backgroundMove 1s ease-in-out';
+            
+            setTimeout(() => {
+                document.body.style.animation = 'backgroundMove 20s ease-in-out infinite';
+            }, 1000);
         }
 
         // عرض الإشعارات
@@ -720,13 +1424,27 @@
             
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 3000);
+            }, 4000);
         }
 
-        // تحديث إجمالي الشرائح عند التغيير
-        document.getElementById('totalSlidesInput').addEventListener('change', function() {
-            totalSlides = parseInt(this.value) || 200;
+        // تحديث الهدف اليومي
+        document.getElementById('dailyGoalInput').addEventListener('change', function() {
+            dailyGoal = parseInt(this.value) || 50;
             updateIndicators();
+            showNotification(`🎯 تم تحديث الهدف اليومي إلى ${dailyGoal} شريحة بنجاح!`);
+        });
+
+        // تحديث إجمالي الشرائح
+        document.getElementById('totalSlidesInput').addEventListener('change', function() {
+            const newTotal = parseInt(this.value) || 200;
+            if (newTotal >= completedSlides) {
+                totalSlides = newTotal;
+                updateIndicators();
+                showNotification(`📊 تم تحديث إجمالي الشرائح إلى ${totalSlides}`);
+            } else {
+                this.value = totalSlides;
+                showNotification('⚠️ لا يمكن أن يكون الإجمالي أقل من الشرائح المنجزة', 'warning');
+            }
         });
 
         // اختصارات لوحة المفاتيح
@@ -738,18 +1456,66 @@
             if (e.key === 'Escape') {
                 pauseTimer();
             }
+            if (e.ctrlKey && e.key === 's') {
+                exportData();
+                e.preventDefault();
+            }
+            if (e.ctrlKey && e.key === 'r') {
+                resetAll();
+                e.preventDefault();
+            }
         });
 
-        // تهيئة النظام
+        // التهيئة
         document.addEventListener('DOMContentLoaded', function() {
             initCharts();
             updateIndicators();
+            currentTaskStartTime = Date.now();
             
-            // عرض نصائح البداية
+            // تحديث الساعة كل ثانية
+            setInterval(updateDigitalClock, 1000);
+            updateDigitalClock();
+            
+            // تحديث الاقتراحات كل 30 ثانية
+            setInterval(updateSuggestions, 30000);
+            updateSuggestions();
+            
+            // رسالة ترحيب متقدمة
             setTimeout(() => {
-                showNotification('💡 نصيحة: استخدم Ctrl+Enter لإضافة دفعة سريعة!');
-            }, 2000);
+                showNotification('🌟 مرحباً بك في النسخة المطورة! ابدأ رحلة الإنجاز');
+            }, 1000);
+            
+            // نصائح تفاعلية
+            setTimeout(() => {
+                showNotification('💡 اختصارات مفيدة: Ctrl+Enter للإضافة، Escape للإيقاف');
+            }, 4000);
+            
+            setTimeout(() => {
+                showNotification('🎯 حدد هدفك اليومي واتبع تقدمك المباشر');
+            }, 7000);
         });
+
+        // دوال مساعدة للأداء
+        function calculateEfficiency() {
+            if (tasks.length === 0) return 0;
+            const totalTime = (Date.now() - sessionStartTime - pausedDuration - totalBreakTime) / (1000 * 60);
+            return totalTime > 0 ? (completedSlides / totalTime * 60).toFixed(1) : 0; // شرائح/ساعة
+        }
+
+        function getProductivityStatus() {
+            const efficiency = calculateEfficiency();
+            if (efficiency > 100) return { status: 'ممتاز', color: '#48bb78', icon: '🔥' };
+            if (efficiency > 50) return { status: 'جيد جداً', color: '#667eea', icon: '💪' };
+            if (efficiency > 25) return { status: 'جيد', color: '#ed8936', icon: '👍' };
+            return { status: 'يحتاج تحسين', color: '#e53e3e', icon: '📈' };
+        }
+
+        // تحديث دوري للمؤشرات
+        setInterval(() => {
+            if (!isPaused) {
+                updateIndicators();
+            }
+        }, 30000); // كل 30 ثانية
     </script>
 </body>
 </html>
