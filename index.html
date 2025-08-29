@@ -960,6 +960,91 @@
         let currentTaskStartTime = null;
         let breakStartTime = null;
         let totalBreakTime = 0;
+        let actualWorkStartTime = Date.now(); // وقت بداية العمل الفعلي
+
+        // دوال الحفظ والاسترجاع
+        function saveToMemory() {
+            const data = {
+                totalSlides,
+                completedSlides,
+                batchCounter,
+                sessionStartTime,
+                lastBatchTime,
+                isPaused,
+                pausedDuration,
+                pauseStartTime,
+                tasks,
+                dailyGoal,
+                currentTaskStartTime,
+                breakStartTime,
+                totalBreakTime,
+                actualWorkStartTime,
+                savedAt: Date.now()
+            };
+            
+            // حفظ في متغير عام للجلسة
+            window.appData = data;
+            
+            // محاولة الحفظ في localStorage إذا كان متاحاً
+            try {
+                localStorage.setItem('mobileSlideTracker', JSON.stringify(data));
+            } catch (e) {
+                console.log('localStorage غير متاح، سيتم الحفظ في الذاكرة فقط');
+            }
+        }
+
+        function loadFromMemory() {
+            let data = null;
+            
+            // محاولة الاسترجاع من localStorage أولاً
+            try {
+                const savedData = localStorage.getItem('mobileSlideTracker');
+                if (savedData) {
+                    data = JSON.parse(savedData);
+                }
+            } catch (e) {
+                console.log('لا يمكن الاسترجاع من localStorage');
+            }
+            
+            // الاسترجاع من متغير الجلسة كبديل
+            if (!data && window.appData) {
+                data = window.appData;
+            }
+            
+            if (data && data.savedAt) {
+                // استرجاع البيانات
+                totalSlides = data.totalSlides || 200;
+                completedSlides = data.completedSlides || 0;
+                batchCounter = data.batchCounter || 0;
+                sessionStartTime = data.sessionStartTime || Date.now();
+                lastBatchTime = data.lastBatchTime || Date.now();
+                isPaused = data.isPaused || false;
+                pausedDuration = data.pausedDuration || 0;
+                pauseStartTime = data.pauseStartTime || 0;
+                tasks = data.tasks || [];
+                dailyGoal = data.dailyGoal || 50;
+                currentTaskStartTime = data.currentTaskStartTime;
+                breakStartTime = data.breakStartTime;
+                totalBreakTime = data.totalBreakTime || 0;
+                actualWorkStartTime = data.actualWorkStartTime || Date.now();
+                
+                // تحديث حقول الإدخال
+                document.getElementById('totalSlidesInput').value = totalSlides;
+                document.getElementById('dailyGoalInput').value = dailyGoal;
+                
+                // إعادة بناء الجدول
+                rebuildTable();
+                
+                // تحديث زر الإيقاف
+                if (isPaused) {
+                    document.getElementById('pauseBtn').innerHTML = '▶️ استئناف';
+                }
+                
+                showNotification('📂 تم استرجاع البيانات المحفوظة بنجاح!');
+                return true;
+            }
+            return false;
+        }
 
         // الرسوم البيانية
         let progressChart, speedChart;
@@ -1132,8 +1217,21 @@
             document.getElementById('completedSlides').textContent = completedSlides;
             document.getElementById('totalSlidesDisplay').textContent = totalSlides;
 
-            // متوسط السرعة
-            const totalTimeMinutes = (Date.now() - sessionStartTime - pausedDuration - totalBreakTime) / (1000 * 60);
+            // حساب متوسط السرعة المحسن
+            const currentTime = Date.now();
+            let effectiveWorkTime = currentTime - actualWorkStartTime - totalBreakTime;
+            
+            if (isPaused && pauseStartTime) {
+                effectiveWorkTime -= (currentTime - pauseStartTime);
+            } else {
+                effectiveWorkTime -= pausedDuration;
+            }
+            
+            if (breakStartTime) {
+                effectiveWorkTime -= (currentTime - breakStartTime);
+            }
+            
+            const totalTimeMinutes = Math.max(0, effectiveWorkTime / (1000 * 60));
             const averageSpeed = totalTimeMinutes > 0 ? (completedSlides / totalTimeMinutes).toFixed(1) : 0;
             document.getElementById('averageSpeed').textContent = averageSpeed;
 
@@ -1144,6 +1242,9 @@
 
             // الإحصائيات البسيطة
             updateSimpleStats();
+            
+            // حفظ تلقائي
+            saveToMemory();
         }
 
         // تحديث الإحصائيات البسيطة
@@ -1159,16 +1260,34 @@
             const currentSpeed = tasks.length > 0 ? tasks[tasks.length - 1].speed : 0;
             document.getElementById('currentSpeed').textContent = currentSpeed;
             
-            // ساعات العمل
-            const totalHours = ((Date.now() - sessionStartTime - pausedDuration - totalBreakTime) / (1000 * 60 * 60)).toFixed(1);
-            document.getElementById('totalHours').textContent = totalHours;
+            // ساعات العمل - تحسين الحساب
+            const currentTime = Date.now();
+            let effectiveWorkTime = currentTime - actualWorkStartTime - totalBreakTime;
+            
+            // طرح الوقت المتوقف إذا كان النظام متوقفاً حالياً
+            if (isPaused && pauseStartTime) {
+                effectiveWorkTime -= (currentTime - pauseStartTime);
+            } else {
+                effectiveWorkTime -= pausedDuration;
+            }
+            
+            // طرح وقت الاستراحة الحالي إذا كان في استراحة
+            if (breakStartTime) {
+                effectiveWorkTime -= (currentTime - breakStartTime);
+            }
+            
+            const workHours = Math.max(0, effectiveWorkTime / (1000 * 60 * 60));
+            document.getElementById('totalHours').textContent = workHours.toFixed(1);
 
             // عدد المهام
             document.getElementById('tasksCount').textContent = tasks.length;
 
-            // معدل الكفاءة
-            const efficiencyRate = tasks.length > 0 ? 
-                (tasks.reduce((sum, task) => sum + parseFloat(task.speed), 0) / tasks.length).toFixed(1) : '--';
+            // معدل الكفاءة - تحسين الحساب
+            let efficiencyRate = '--';
+            if (tasks.length > 0 && workHours > 0) {
+                const hourlyRate = (completedSlides / workHours).toFixed(1);
+                efficiencyRate = hourlyRate + ' ش/س';
+            }
             document.getElementById('efficiencyRate').textContent = efficiencyRate;
         }
 
@@ -1348,16 +1467,48 @@
 
         // تصدير البيانات
         function exportData() {
+            const currentTime = Date.now();
+            let effectiveWorkTime = currentTime - actualWorkStartTime - totalBreakTime;
+            
+            if (isPaused && pauseStartTime) {
+                effectiveWorkTime -= (currentTime - pauseStartTime);
+            } else {
+                effectiveWorkTime -= pausedDuration;
+            }
+            
+            if (breakStartTime) {
+                effectiveWorkTime -= (currentTime - breakStartTime);
+            }
+            
+            const workHours = Math.max(0, effectiveWorkTime / (1000 * 60 * 60));
+            const averageSpeed = workHours > 0 ? (completedSlides / workHours).toFixed(1) : 0;
+
             const data = {
                 تاريخ_التصدير: new Date().toLocaleString('ar-EG'),
+                معلومات_الجلسة: {
+                    بداية_الجلسة: new Date(sessionStartTime).toLocaleString('ar-EG'),
+                    بداية_العمل_الفعلي: new Date(actualWorkStartTime).toLocaleString('ar-EG'),
+                    نهاية_الجلسة: new Date().toLocaleString('ar-EG'),
+                    مدة_الجلسة_الكلية: ((currentTime - sessionStartTime) / (1000 * 60 * 60)).toFixed(1) + ' ساعة',
+                    مدة_العمل_الفعلي: workHours.toFixed(1) + ' ساعة',
+                    مدة_الاستراحات: (totalBreakTime / (1000 * 60 * 60)).toFixed(1) + ' ساعة',
+                    مدة_التوقف: (pausedDuration / (1000 * 60 * 60)).toFixed(1) + ' ساعة'
+                },
                 الملخص: {
                     إجمالي_الشرائح: totalSlides,
                     الشرائح_المنجزة: completedSlides,
                     النسبة_المئوية: ((completedSlides / totalSlides) * 100).toFixed(1) + '%',
                     الهدف_اليومي: dailyGoal,
+                    تحقيق_الهدف: completedSlides >= dailyGoal ? 'تم تحقيقه ✅' : 'لم يتحقق ❌',
                     عدد_المهام: tasks.length,
-                    إجمالي_وقت_العمل: ((Date.now() - sessionStartTime - pausedDuration - totalBreakTime) / (1000 * 60 * 60)).toFixed(1) + ' ساعة',
-                    متوسط_السرعة: tasks.length > 0 ? (tasks.reduce((sum, task) => sum + parseFloat(task.speed), 0) / tasks.length).toFixed(1) + ' ش/د' : '0'
+                    متوسط_السرعة_بالساعة: averageSpeed + ' ش/س',
+                    متوسط_السرعة_بالدقيقة: (parseFloat(averageSpeed) / 60).toFixed(2) + ' ش/د'
+                },
+                الإحصائيات_التفصيلية: {
+                    أسرع_مهمة: tasks.length > 0 ? Math.max(...tasks.map(t => parseFloat(t.speed))) + ' ش/د' : 0,
+                    أبطأ_مهمة: tasks.length > 0 ? Math.min(...tasks.map(t => parseFloat(t.speed))) + ' ش/د' : 0,
+                    متوسط_الشرائح_بالمهمة: tasks.length > 0 ? (completedSlides / tasks.length).toFixed(1) : 0,
+                    كفاءة_الوقت: workHours > 0 ? ((completedSlides / workHours / 60) * 100).toFixed(1) + '%' : '0%'
                 },
                 المهام_التفصيلية: tasks
             };
@@ -1366,20 +1517,32 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `تقرير-شرائح-${new Date().toLocaleDateString('ar-EG').replace(/\//g, '-')}.json`;
+            a.download = `تقرير-شرائح-مفصل-${new Date().toLocaleDateString('ar-EG').replace(/\//g, '-')}.json`;
             a.click();
             URL.revokeObjectURL(url);
             
-            showNotification('📊 تم تصدير التقرير المفصل بنجاح!');
+            showNotification('📊 تم تصدير التقرير المفصل مع إحصائيات الوقت الدقيقة!');
         }
 
         // إعادة تعيين الكل
         function resetAll() {
             if (confirm('⚠️ سيتم حذف جميع البيانات نهائياً. هل أنت متأكد؟')) {
+                // حذف البيانات المحفوظة
+                try {
+                    localStorage.removeItem('mobileSlideTracker');
+                } catch (e) {
+                    console.log('لا يمكن حذف localStorage');
+                }
+                
+                if (window.appData) {
+                    delete window.appData;
+                }
+
                 totalSlides = parseInt(document.getElementById('totalSlidesInput').value) || 200;
                 completedSlides = 0;
                 batchCounter = 0;
                 sessionStartTime = Date.now();
+                actualWorkStartTime = Date.now();
                 lastBatchTime = Date.now();
                 currentTaskStartTime = null;
                 isPaused = false;
@@ -1387,6 +1550,9 @@
                 totalBreakTime = 0;
                 breakStartTime = null;
                 tasks = [];
+
+                // إعادة تعيين زر الإيقاف
+                document.getElementById('pauseBtn').innerHTML = '⏸️ إيقاف مؤقت';
 
                 // مسح الجدول
                 document.getElementById("taskTable").getElementsByTagName('tbody')[0].innerHTML = '';
@@ -1402,7 +1568,7 @@
 
                 updateIndicators();
                 updateSuggestions();
-                showNotification('🔄 تم إعادة تعيين النظام بالكامل!');
+                showNotification('🔄 تم إعادة تعيين النظام بالكامل وحذف البيانات المحفوظة!');
             }
         }
 
@@ -1468,9 +1634,17 @@
 
         // التهيئة
         document.addEventListener('DOMContentLoaded', function() {
+            // محاولة استرجاع البيانات المحفوظة
+            const dataLoaded = loadFromMemory();
+            
             initCharts();
             updateIndicators();
-            currentTaskStartTime = Date.now();
+            
+            // تعيين وقت بداية المهمة إذا لم يتم استرجاعها
+            if (!dataLoaded) {
+                currentTaskStartTime = Date.now();
+                actualWorkStartTime = Date.now();
+            }
             
             // تحديث الساعة كل ثانية
             setInterval(updateDigitalClock, 1000);
@@ -1480,19 +1654,27 @@
             setInterval(updateSuggestions, 30000);
             updateSuggestions();
             
-            // رسالة ترحيب متقدمة
-            setTimeout(() => {
-                showNotification('🌟 مرحباً بك في النسخة المطورة! ابدأ رحلة الإنجاز');
-            }, 1000);
+            // حفظ تلقائي كل دقيقة
+            setInterval(saveToMemory, 60000);
             
-            // نصائح تفاعلية
-            setTimeout(() => {
-                showNotification('💡 اختصارات مفيدة: Ctrl+Enter للإضافة، Escape للإيقاف');
-            }, 4000);
-            
-            setTimeout(() => {
-                showNotification('🎯 حدد هدفك اليومي واتبع تقدمك المباشر');
-            }, 7000);
+            // رسائل الترحيب
+            if (dataLoaded) {
+                setTimeout(() => {
+                    showNotification('🔄 تم استرجاع جلستك السابقة بنجاح!');
+                }, 1000);
+            } else {
+                setTimeout(() => {
+                    showNotification('🌟 مرحباً بك في النسخة المطورة! ابدأ رحلة الإنجاز');
+                }, 1000);
+                
+                setTimeout(() => {
+                    showNotification('💡 اختصارات مفيدة: Ctrl+Enter للإضافة، Escape للإيقاف');
+                }, 4000);
+                
+                setTimeout(() => {
+                    showNotification('🎯 حدد هدفك اليومي واتبع تقدمك المباشر');
+                }, 7000);
+            }
         });
 
         // دوال مساعدة للأداء
